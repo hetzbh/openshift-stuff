@@ -1,20 +1,29 @@
+# Which groups of machines will be participating in the install? (Lines 3-7)
+
 [OSEv3:children]
 masters
 nodes
 etcd
 nfs
 
+# Variables that we need to configure (there are TONS of them, depending on your installation) (line 11 up to the "master" parts)
+
 [OSEv3:vars]
+#under which user Ansible should perform this install, should it use sudo? yes please (line 13-14)
 ansible_ssh_user=hetz
 ansible_become=yes
+
+# Which Openshift (commercial, origin) to install and which version? Also, containerized or RPM version?
 deployment_type=origin
 openshift_image_tag=v3.7.2
 openshift_release=3.7.2
 openshift_pkg_version=v3.7.2
 containerized=true
 
+# Examples would help us a lot to learn OpenShift
 openshift_install_examples=true
 
+# Metrics will install Heapster (yay!), Hawkular and CassandraDB to measure CPU,Network and memory per pod.
 openshift_metrics_install_metrics=true
 openshift_metrics_start_cluster=true
 openshift_metrics_duration=1
@@ -24,13 +33,15 @@ openshift_metrics_image_version=v3.7.2
 enable_excluders=false
 enable_docker_excluder=false
 
+# Which network plugin Openshift will use? There are many, we'll use Open vSwitch!
 os_sdn_network_plugin_name='redhat/openshift-ovs-multitenant'
 
-# use htpasswd authentication with demo/demo
+# use htpasswd authentication with demo/demo - in order to login as a standard user
 openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/origin/master/htpasswd'}]
 openshift_master_htpasswd_users={'demo': '$apr1$.MaA77kd$Rlnn6RXq9kCjnEfh5I3w/.'}
 
 # put the router on dedicated infra node
+# This router stuff will run HAProxy to redirect from an app-name to internal pods using route.
 openshift_hosted_router_selector='region=infra'
 openshift_master_default_subdomain=apps.yourdomain.com
 
@@ -40,7 +51,7 @@ openshift_hosted_registry_selector='region=infra'
 # project pods should be placed on primary nodes
 osm_default_node_selector='region=primary'
 
-# Required for Service Catalog
+# Required for Service Catalog (see here: https://docs.openshift.com/container-platform/3.7/architecture/service_catalog/index.html)
 openshift_hosted_etcd_storage_kind=nfs
 openshift_hosted_etcd_storage_nfs_options="*(rw,root_squash,sync,no_wdelay)"
 openshift_hosted_etcd_storage_nfs_directory=/opt/osev3-etcd
@@ -49,8 +60,14 @@ openshift_hosted_etcd_storage_access_modes=["ReadWriteOnce"]
 openshift_hosted_etcd_storage_volume_size=10G
 openshift_hosted_etcd_storage_labels={'storage': 'etcd'}
 openshift_logging_install_logging=True
-openshift_logging_image_version=v3.6.1
+openshift_logging_image_version=v3.7.2
+
+
+# What is your Openshift main name to access from your browser? master is a nice name but you can give any name 
+# as long as it's in the DNS and points to your master node
 openshift_public_hostname="master.yourdomain.com"
+
+# From here onwards, a [name] represents an FQDN server name or names.
 
 [masters]
 master.yourdomain.com
@@ -62,6 +79,8 @@ master.yourdomain.com
 master.yourdomain.com
 
 [nodes]
+# all the servers needs to be in the list and if they have specific functions - it should be in the labels
+# NOTE: On OCP 3.9 it's different!
 # master needs to be included in the node to be configured in the SDN
 master.yourdomain.com
 infra.yourdomain.com openshift_node_labels="{'region': 'infra', 'zone': 'default'}"
