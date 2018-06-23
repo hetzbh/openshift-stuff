@@ -1,2 +1,3 @@
 # openshift-stuff
-Some of the stuff I write for Red Hat's OpenShift. 
+
+In this repo, I will publish some Ansible hosts (inventory) files as examples in order to install OpenShift
