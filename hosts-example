@@ -28,7 +28,7 @@ openshift_metrics_install_metrics=true
 openshift_metrics_start_cluster=true
 openshift_metrics_duration=1
 openshift_metrics_hawkular_hostname=hawkular-metrics.apps.yourdomain.com
-openshift_metrics_image_version=v3.7.2
+openshift_metrics_image_version=v3.7.1
 
 enable_excluders=false
 enable_docker_excluder=false
@@ -54,7 +54,7 @@ osm_default_node_selector='region=primary'
 # Required for Service Catalog (see here: https://docs.openshift.com/container-platform/3.7/architecture/service_catalog/index.html)
 openshift_hosted_etcd_storage_kind=nfs
 openshift_hosted_etcd_storage_nfs_options="*(rw,root_squash,sync,no_wdelay)"
-openshift_hosted_etcd_storage_nfs_directory=/opt/osev3-etcd
+openshift_hosted_etcd_storage_nfs_directory=/exports/osev3-etcd
 openshift_hosted_etcd_storage_volume_name=broker-ansible-etcd
 openshift_hosted_etcd_storage_access_modes=["ReadWriteOnce"]
 openshift_hosted_etcd_storage_volume_size=10G
@@ -62,6 +62,26 @@ openshift_hosted_etcd_storage_labels={'storage': 'etcd'}
 openshift_logging_install_logging=True
 openshift_logging_image_version=v3.7.2
 
+# NFS For the Registry
+openshift_hosted_manage_registry=true
+openshift_hosted_manage_registry_console=true
+openshift_hosted_registry_storage_kind=nfs
+openshift_hosted_registry_storage_access_modes=['ReadWriteMany']
+openshift_hosted_registry_storage_nfs_directory=/exports
+openshift_hosted_registry_storage_nfs_options='*(rw,root_squash)'
+openshift_hosted_registry_storage_volume_name=registry
+openshift_hosted_registry_storage_volume_size=10Gi
+
+# NFS for Logging (Incomplete!)
+
+openshift_logging_install_logging=true
+
+openshift_logging_storage_kind=nfs
+openshift_logging_storage_access_modes=['ReadWriteOnce']
+openshift_logging_storage_nfs_directory=/exports
+openshift_logging_storage_nfs_options='*(rw,root_squash)'
+openshift_logging_storage_volume_name=logging
+openshift_logging_storage_volume_size=10Gi
 
 # What is your Openshift main name to access from your browser? master is a nice name but you can give any name 
 # as long as it's in the DNS and points to your master node
